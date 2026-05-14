@@ -422,11 +422,12 @@ body{font-family:'Outfit',sans-serif;background:var(--beige);color:var(--text);o
 .tst-section{background:var(--beige);padding:8rem 0;overflow:hidden}
 .tst-head{text-align:center;max-width:600px;margin:0 auto 4.5rem;padding:0 5%}
 .marquee-wrap{overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent,black 8%,black 92%,transparent)}
-.marquee-track{display:flex;gap:1.5rem;animation:marqueeRun 36s linear infinite;width:max-content}
+.marquee-track{display:flex;gap:1.5rem;align-items:stretch;animation:marqueeRun 36s linear infinite;width:max-content}
 .marquee-track:hover{animation-play-state:paused}
 @keyframes marqueeRun{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 .tst-card{
-  min-width:360px;
+  min-width:360px;max-width:360px;
+  display:flex;flex-direction:column;
   background:rgba(255,255,255,.82);
   backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
   border-radius:22px;padding:2rem 2.4rem;
@@ -434,13 +435,16 @@ body{font-family:'Outfit',sans-serif;background:var(--beige);color:var(--text);o
   box-shadow:0 8px 32px rgba(13,59,46,.06);
   transition:transform .4s,box-shadow .4s;
 }
+.tst-card .tst-text{flex:1 1 auto}
+.tst-card .tst-author{margin-top:auto}
 .tst-card:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(13,59,46,.1)}
 .tst-stars{display:flex;gap:3px;margin-bottom:1rem}
 .tst-stars svg{width:14px;height:14px;fill:var(--gold)}
 .quote-icon{font-family:'Cormorant Garamond',serif;font-size:3rem;color:var(--gold);opacity:.3;line-height:.6;margin-bottom:.5rem;display:block;font-weight:700}
 .tst-text{font-family:'Cormorant Garamond',serif;font-size:.96rem;font-style:italic;color:var(--dark);line-height:1.82;margin-bottom:1.5rem}
 .tst-author{display:flex;align-items:center;gap:.75rem}
-.tst-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--dark),var(--green));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--gold);font-weight:600;flex-shrink:0;overflow:hidden}
+.tst-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--dark),var(--green));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--gold);font-weight:600;flex-shrink:0;overflow:hidden;position:relative}
+.tst-avatar img{position:absolute;inset:0}
 .tst-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
 .tst-name{font-size:.88rem;font-weight:600;color:var(--dark)}
 .tst-role{font-size:.74rem;color:var(--gray);font-weight:300}

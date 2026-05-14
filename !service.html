@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Chemist Pharm — Premium Compounding Pharmacy</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+<style>
+/* ── RESET & VARS ── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --dark:#0D3B2E;--green:#145C43;--gold:#C8A96B;--gold2:#e2c180;
+  --beige:#F7F3ED;--beige2:#EDE8E0;--white:#fff;--gray:#6B7280;
+  --text:#1a1a1a;
+}
+html{font-size:16px;scroll-behavior:auto}
+body{font-family:'Outfit',sans-serif;background:var(--beige);color:var(--text);overflow-x:hidden;cursor:none}
+
+/* ── PRELOADER ── */
+#preloader{
+  position:fixed;inset:0;z-index:9999;
+  background:var(--dark);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  transition:opacity .8s ease, visibility .8s ease;
+}
+#preloader.hide{opacity:0;visibility:hidden;pointer-events:none}
+.pre-logo{opacity:0;transform:scale(.85);transition:all .9s cubic-bezier(.34,1.56,.64,1)}
+.pre-logo img{height:80px;border-radius:14px;box-shadow:0 0 40px rgba(200,169,107,.3)}
+.pre-logo.show{opacity:1;transform:scale(1)}
+.pre-bar-wrap{width:200px;height:1px;background:rgba(255,255,255,.1);margin-top:2.5rem;border-radius:1px;overflow:hidden}
+.pre-bar{height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--gold2));transition:width .05s linear;border-radius:1px}
+.pre-pct{font-family:'Cormorant Garamond',serif;color:var(--gold);font-size:1rem;margin-top:1rem;letter-spacing:.2em;font-weight:300}
+.pre-label{font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.3);margin-top:.5rem}
+
+/* ── SMOOTH SCROLL WRAPPER ── */
+#smooth-wrapper{overflow:hidden;position:fixed;top:34px;left:0;right:0;bottom:0;width:100%}
+#smooth-content{will-change:transform}
+
+/* ── CUSTOM CURSOR ── */
+.cur{position:fixed;z-index:99999;pointer-events:none;mix-blend-mode:normal}
+.cur-dot{
+  width:8px;height:8px;
+  background:var(--gold);
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  transition:width .2s,height .2s,background .2s;
+}
+.cur-ring{
+  position:fixed;
+  width:44px;height:44px;
+  border:1px solid rgba(200,169,107,.5);
+  border-radius:50%;
+  transform:translate(-50%,-50%);
+  pointer-events:none;z-index:99998;
+  transition:width .4s cubic-bezier(.25,.46,.45,.94),height .4s,border-color .3s,background .3s;
+}
+.cur-trail{
+  position:fixed;width:4px;height:4px;
+  background:rgba(200,169,107,.4);border-radius:50%;
+  pointer-events:none;z-index:99997;
+  transform:translate(-50%,-50%);
+}
+
+/* ── GRAIN OVERLAY ── */
+.grain{
+  position:fixed;inset:0;z-index:9000;pointer-events:none;opacity:.03;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E");
+  background-repeat:repeat;
+  animation:grainShift 0.5s steps(2) infinite;
+}
+@keyframes grainShift{0%{transform:translate(0,0)}25%{transform:translate(-2%,-1%)}50%{transform:translate(1%,2%)}75%{transform:translate(-1%,1%)}100%{transform:translate(2%,-2%)}}
+
+/* ── ANN BAR ── */
+.ann-bar{
+  background:var(--dark);color:rgba(255,255,255,.65);
+  font-size:.73rem;letter-spacing:.07em;overflow:hidden;
+  white-space:nowrap;height:34px;display:flex;align-items:center;
+  position:fixed;top:0;left:0;right:0;z-index:1001;
+}
+.ann-inner{display:inline-flex;gap:4rem;animation:annScroll 30s linear infinite}
+.ann-inner span{display:inline-flex;align-items:center;gap:.5rem}
+@keyframes annScroll{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+
+/* ── NAV ── */
+.nav{
+  position:fixed;top:34px;left:0;right:0;z-index:999;
+  padding:0 5%;height:72px;
+  display:flex;align-items:center;justify-content:space-between;
+  transition:background .5s,box-shadow .5s,transform .4s;
+}
+.nav.scrolled{
+  background:rgba(13,59,46,.96);
+  backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);
+  box-shadow:0 2px 40px rgba(0,0,0,.3);
+}
+.nav.hidden{transform:translateY(-110%)}
+.nav-logo{display:flex;align-items:center;gap:.75rem;text-decoration:none}
+.nav-logo img{height:52px;width:auto;border-radius:10px;display:block;transition:transform .35s,box-shadow .35s}
+.nav-logo:hover img{transform:scale(1.05);box-shadow:0 0 20px rgba(200,169,107,.4)}
+.nav-logo-name{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:600;color:var(--white);letter-spacing:.02em;line-height:1.1}
+.nav-logo-name span{color:var(--gold)}
+.nav-logo-sub{font-size:.58rem;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.4);display:block}
+.nav-links{display:flex;gap:2.2rem;list-style:none;align-items:center}
+.nav-links a{
+  color:rgba(255,255,255,.65);text-decoration:none;
+  font-size:.8rem;font-weight:400;letter-spacing:.08em;text-transform:uppercase;
+  transition:color .25s;position:relative;padding-bottom:2px;
+}
+.nav-links a::after{
+  content:'';position:absolute;bottom:-2px;left:0;
+  width:0;height:1px;background:var(--gold);
+  transition:width .35s cubic-bezier(.4,0,.2,1);
+}
+.nav-links a:hover{color:var(--gold)}
+.nav-links a:hover::after,.nav-links a.active::after{width:100%}
+.nav-links a.active{color:var(--gold)}
+.nav-cta{
+  background:var(--gold);color:var(--dark) !important;
+  padding:.52rem 1.35rem;border-radius:50px;
+  font-size:.76rem !important;font-weight:600 !important;
+  letter-spacing:.06em !important;text-transform:uppercase !important;
+  transition:background .3s,transform .3s,box-shadow .3s !important;
+  position:relative;overflow:hidden;
+}
+.nav-cta::before{content:'';position:absolute;inset:0;background:var(--white);transform:scaleX(0);transform-origin:left;transition:transform .4s;border-radius:50px}
+.nav-cta:hover{background:var(--gold2) !important;transform:translateY(-2px) !important;box-shadow:0 8px 24px rgba(200,169,107,.4) !important}
+.nav-cta:hover::before{transform:scaleX(1)}
+.nav-cta::after{display:none !important}
+.nav-cta > *{position:relative;z-index:1}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;background:var(--dark);
+  position:relative;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;padding-top:130px;padding-bottom:40px;
+}
+.hero-bg-layer{position:absolute;inset:0;z-index:0}
+.hero-gradient{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse 90% 80% at 25% 45%, #1e6b4a 0%, #0a2d22 55%, #051810 100%);
+}
+.hero-mesh{
+  position:absolute;inset:0;
+  background-image:
+    radial-gradient(circle at 12% 88%,rgba(200,169,107,.06) 0%,transparent 50%),
+    radial-gradient(circle at 88% 18%,rgba(20,92,67,.45) 0%,transparent 55%),
+    radial-gradient(circle at 55% 75%,rgba(200,169,107,.04) 0%,transparent 42%);
+  animation:meshPulse 8s ease-in-out infinite;
+}
+@keyframes meshPulse{0%,100%{opacity:1}50%{opacity:.7}}
+.hero-grid-overlay{
+  position:absolute;inset:0;
+  background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+  background-size:64px 64px;
+}
+/* Glow blobs */
+.gb{position:absolute;border-radius:50%;filter:blur(90px);pointer-events:none;animation:gbFloat ease-in-out infinite}
+.gb1{width:600px;height:600px;top:-80px;right:-60px;background:rgba(20,92,67,.4);animation-duration:10s}
+.gb2{width:360px;height:360px;bottom:-50px;left:-40px;background:rgba(200,169,107,.1);animation-duration:12s;animation-delay:-4s}
+.gb3{width:260px;height:260px;top:42%;left:10%;background:rgba(20,92,67,.28);animation-duration:8s;animation-delay:-2s}
+.gb4{width:180px;height:180px;top:18%;right:28%;background:rgba(200,169,107,.07);animation-duration:9s;animation-delay:-5s}
+@keyframes gbFloat{0%,100%{transform:translate(0,0) scale(1)}33%{transform:translate(18px,-28px) scale(1.06)}66%{transform:translate(-14px,18px) scale(.96)}}
+/* Light streak */
+.light-streak{
+  position:absolute;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(200,169,107,.08),transparent);
+  height:1px;width:300px;
+  animation:streakMove 6s ease-in-out infinite;
+}
+.ls1{top:30%;left:10%;animation-delay:0s;transform:rotate(-15deg)}
+.ls2{top:65%;right:5%;width:200px;animation-delay:-3s;transform:rotate(10deg)}
+@keyframes streakMove{0%,100%{opacity:0;transform:translateX(-30px) rotate(-15deg)}50%{opacity:1;transform:translateX(60px) rotate(-15deg)}}
+/* Mouse glow */
+.hero-mouse-glow{
+  position:absolute;width:500px;height:500px;
+  border-radius:50%;
+  background:radial-gradient(circle,rgba(200,169,107,.06) 0%,transparent 70%);
+  pointer-events:none;z-index:4;
+  transform:translate(-50%,-50%);
+  transition:left .8s cubic-bezier(.25,.46,.45,.94),top .8s cubic-bezier(.25,.46,.45,.94);
+}
+/* Floating icons */
+.fi{
+  position:absolute;opacity:.06;z-index:3;
+  color:var(--gold);pointer-events:none;
+  animation:fiDrift linear infinite;
+}
+@keyframes fiDrift{0%{transform:translateY(0) rotate(0)}50%{opacity:.12}100%{transform:translateY(-70px) rotate(18deg);opacity:.02}}
+/* Hero content */
+.hero-content{position:relative;z-index:10;text-align:center;max-width:900px;padding:0 2rem}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(200,169,107,.1);border:1px solid rgba(200,169,107,.28);
+  color:var(--gold);padding:.4rem 1.1rem;border-radius:50px;
+  font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;font-weight:500;
+  margin-bottom:2rem;
+  opacity:0;
+}
+.hero-eyebrow-dot{width:5px;height:5px;background:var(--gold);border-radius:50%;animation:eyebrowPulse 2s ease infinite}
+@keyframes eyebrowPulse{0%,100%{transform:scale(1);opacity:1}50%{transform:scale(1.8);opacity:.3}}
+.hero h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(3.2rem,8.5vw,7.8rem);
+  font-weight:300;color:var(--white);
+  line-height:1.03;letter-spacing:-.028em;
+  opacity:0;
+}
+.hero h1 .word{display:inline-block;overflow:hidden;vertical-align:bottom;margin-right:.18em}
+.hero h1 .char{display:inline-block;transform:translateY(110%);opacity:0}
+.hero h1 em{font-style:italic;color:var(--gold)}
+.hero-gold-line{
+  width:0;height:2px;
+  background:linear-gradient(90deg,transparent,var(--gold) 40%,var(--gold2) 60%,transparent);
+  margin:1.6rem auto;
+}
+.hero-sub{
+  font-size:clamp(.92rem,1.8vw,1.12rem);
+  color:rgba(255,255,255,.55);font-weight:300;
+  max-width:520px;margin:0 auto 2.8rem;
+  line-height:1.9;opacity:0;transform:translateY(20px);
+}
+.hero-actions{display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;opacity:0;transform:translateY(20px)}
+/* Buttons */
+.btn-gold{
+  display:inline-flex;align-items:center;gap:.45rem;
+  background:var(--gold);color:var(--dark);
+  padding:.95rem 2.4rem;border-radius:50px;
+  font-size:.9rem;font-weight:600;text-decoration:none;letter-spacing:.04em;
+  transition:transform .4s,box-shadow .4s;
+  position:relative;overflow:hidden;cursor:none;border:none;
+}
+.btn-gold::before{content:'';position:absolute;inset:0;background:var(--white);transform:scaleX(0);transform-origin:left;transition:transform .45s;border-radius:50px}
+.btn-gold:hover{transform:translateY(-3px);box-shadow:0 20px 50px rgba(200,169,107,.45)}
+.btn-gold:hover::before{transform:scaleX(1)}
+.btn-gold>*{position:relative;z-index:1}
+.btn-ghost{
+  display:inline-flex;align-items:center;gap:.45rem;
+  background:transparent;color:rgba(255,255,255,.85);
+  padding:.95rem 2.4rem;border-radius:50px;
+  font-size:.9rem;font-weight:400;text-decoration:none;letter-spacing:.04em;
+  border:1.5px solid rgba(255,255,255,.22);transition:all .35s;cursor:none;
+}
+.btn-ghost:hover{border-color:var(--gold);color:var(--gold);transform:translateY(-3px);box-shadow:0 12px 40px rgba(200,169,107,.14)}
+/* scroll hint removed */
+
+/* ── STATS ── */
+.stats-row{background:var(--green);display:grid;grid-template-columns:repeat(4,1fr);padding:2.4rem 5%;gap:1rem}
+.stat-box{text-align:center;color:var(--white);position:relative}
+.stat-box:not(:last-child)::after{content:'';position:absolute;right:0;top:20%;bottom:20%;width:1px;background:rgba(255,255,255,.14)}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:300;color:var(--gold);line-height:1;display:block;margin-bottom:.2rem}
+.stat-label{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5)}
+
+/* ── SECTION COMMON ── */
+.section-tag{
+  display:inline-flex;align-items:center;gap:.6rem;
+  font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;
+  font-weight:600;color:var(--green);margin-bottom:.8rem;
+}
+.section-tag::before{content:'';width:.9rem;height:1.5px;background:var(--gold);flex-shrink:0}
+.section-heading{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2.4rem,5vw,4rem);font-weight:300;
+  line-height:1.08;letter-spacing:-.025em;color:var(--dark);
+}
+.section-heading em{font-style:italic;color:var(--gold)}
+.section-body{color:var(--gray);font-size:.93rem;line-height:1.88;font-weight:300;max-width:520px;margin-top:.9rem}
+
+/* ── SERVICES ── */
+.services-section{background:var(--beige);padding:8rem 5%}
+.services-head{text-align:center;max-width:680px;margin:0 auto 5rem}
+.services-head .section-body{margin:.8rem auto 0}
+.svc-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:1.8rem;max-width:1280px;margin:0 auto}
+.svc-card{
+  background:var(--white);border-radius:24px;padding:2.6rem;
+  border:1px solid rgba(13,59,46,.07);
+  position:relative;overflow:hidden;cursor:none;
+  transform-style:preserve-3d;
+  transition:box-shadow .5s ease;
+  transform:perspective(1000px) rotateX(0) rotateY(0);
+}
+.svc-card-bg{
+  position:absolute;inset:0;
+  background:radial-gradient(circle at var(--mx,50%) var(--my,50%),rgba(200,169,107,.08) 0%,transparent 55%);
+  opacity:0;transition:opacity .4s;pointer-events:none;
+}
+.svc-card:hover .svc-card-bg{opacity:1}
+.svc-card-border{
+  position:absolute;inset:0;border-radius:24px;
+  border:1.5px solid transparent;
+  background:linear-gradient(135deg,var(--gold),var(--gold2),transparent 55%) border-box;
+  -webkit-mask:linear-gradient(#fff 0 0) padding-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:destination-out;mask-composite:exclude;
+  opacity:0;transition:opacity .4s;pointer-events:none;
+}
+.svc-card:hover{box-shadow:0 40px 80px rgba(13,59,46,.13)}
+.svc-card:hover .svc-card-border{opacity:1}
+.svc-icon-wrap{
+  width:56px;height:56px;
+  background:linear-gradient(135deg,var(--dark),var(--green));
+  border-radius:14px;
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:1.6rem;
+  transition:transform .45s cubic-bezier(.34,1.56,.64,1);
+  animation:iconFloat 4s ease-in-out infinite;
+}
+@keyframes iconFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+.svc-card:hover .svc-icon-wrap{transform:rotate(8deg) scale(1.08);animation:none}
+.svc-icon-wrap svg{width:25px;height:25px;stroke:var(--gold);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.svc-card h3{font-family:'Cormorant Garamond',serif;font-size:1.55rem;font-weight:500;color:var(--dark);margin-bottom:.65rem;line-height:1.2}
+.svc-card p{color:var(--gray);font-size:.86rem;line-height:1.8;font-weight:300;margin-bottom:1.5rem}
+.svc-link{
+  display:inline-flex;align-items:center;gap:.35rem;
+  color:var(--green);font-size:.76rem;font-weight:600;
+  letter-spacing:.08em;text-transform:uppercase;text-decoration:none;
+  transition:gap .3s,color .3s;
+}
+.svc-link svg{width:13px;height:13px;stroke:currentColor;fill:none;stroke-width:2.5;transition:transform .3s}
+.svc-link:hover{color:var(--gold);gap:.6rem}
+.svc-link:hover svg{transform:translateX(4px)}
+
+/* ── SCROLL INTERACTIVE ── */
+.scroll-section{background:var(--white)}
+.scroll-wrapper{display:grid;grid-template-columns:1fr 1fr;max-width:1280px;margin:0 auto;min-height:100vh}
+.scroll-sticky{
+  position:sticky;top:0;height:100vh;
+  display:flex;flex-direction:column;justify-content:center;
+  padding:6rem 5rem 6rem 5%;
+  background:var(--dark);overflow:hidden;
+}
+.scroll-sticky::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 90% 90%,rgba(200,169,107,.07),transparent 55%),radial-gradient(ellipse at 10% 10%,rgba(20,92,67,.4),transparent 50%)}
+.scroll-sticky .section-tag{color:var(--gold);position:relative;z-index:1}
+.scroll-sticky .section-tag::before{background:var(--gold)}
+.scroll-sticky .section-heading{color:var(--white);font-size:clamp(2rem,3.5vw,3rem);position:relative;z-index:1}
+.scroll-sticky .section-body{color:rgba(255,255,255,.45);position:relative;z-index:1;max-width:350px}
+.progress-wrap{margin-top:3rem;position:relative;z-index:1}
+.progress-bar-bg{width:56px;height:2px;background:rgba(255,255,255,.12);border-radius:2px;margin-bottom:1.5rem;overflow:hidden}
+.progress-bar-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;transition:width .3s ease}
+/* Vertical glow beam */
+.progress-beam{
+  position:absolute;left:-1px;top:0;
+  width:2px;height:0%;
+  background:linear-gradient(180deg,var(--gold),rgba(200,169,107,.1));
+  border-radius:2px;
+  box-shadow:0 0 12px rgba(200,169,107,.6);
+  transition:height .4s ease;
+}
+.step-indicators{display:flex;flex-direction:column;gap:.5rem}
+.step-ind{display:flex;align-items:center;gap:.7rem;color:rgba(255,255,255,.28);font-size:.74rem;letter-spacing:.07em;text-transform:uppercase;transition:color .35s}
+.step-ind-dot{width:6px;height:6px;border-radius:50%;background:rgba(255,255,255,.18);transition:background .35s,transform .35s,box-shadow .35s;flex-shrink:0}
+.step-ind.active{color:var(--gold)}
+.step-ind.active .step-ind-dot{background:var(--gold);transform:scale(1.4);box-shadow:0 0 10px var(--gold)}
+.scroll-sticky .btn-gold{margin-top:2.5rem;position:relative;z-index:1;align-self:flex-start}
+.scroll-items{padding:8rem 5rem 8rem 5%}
+.scroll-item{
+  margin-bottom:3.5rem;padding:2.4rem;border-radius:20px;
+  border:1px solid transparent;transition:all .5s ease;opacity:.28;
+  transform:translateX(20px);
+}
+.scroll-item.active{
+  opacity:1;border-color:rgba(200,169,107,.28);
+  background:var(--beige);
+  box-shadow:0 20px 60px rgba(13,59,46,.07);
+  transform:translateX(0) scale(1.01);
+}
+.scroll-item-num{font-family:'Cormorant Garamond',serif;font-size:.8rem;color:var(--gold);letter-spacing:.18em;text-transform:uppercase;margin-bottom:.4rem;display:block}
+.scroll-item h3{font-family:'Cormorant Garamond',serif;font-size:clamp(1.5rem,2.8vw,2.1rem);font-weight:500;color:var(--dark);margin-bottom:.7rem;line-height:1.15}
+.scroll-item p{color:var(--gray);font-size:.9rem;line-height:1.82;font-weight:300}
+
+/* ── WHY ── */
+.why-section{background:var(--dark);padding:8rem 5%;position:relative;overflow:hidden}
+.why-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 20% 50%,rgba(20,92,67,.5),transparent 65%),radial-gradient(ellipse 60% 80% at 80% 20%,rgba(200,169,107,.04),transparent 50%)}
+.why-header{text-align:center;max-width:600px;margin:0 auto 5rem;position:relative;z-index:1}
+.why-header .section-tag{color:var(--gold);justify-content:center}
+.why-header .section-tag::before{background:var(--gold)}
+.why-header .section-heading{color:var(--white)}
+.why-header .section-body{color:rgba(255,255,255,.42);margin:.8rem auto 0}
+.why-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1.5rem;max-width:1280px;margin:0 auto;position:relative;z-index:1}
+.why-card{
+  padding:2.5rem 2rem;border:1px solid rgba(200,169,107,.12);border-radius:20px;
+  text-align:center;background:rgba(255,255,255,.022);
+  transition:all .4s ease;position:relative;overflow:hidden;cursor:none;
+}
+.why-glow{position:absolute;inset:0;background:radial-gradient(circle at 50% 110%,rgba(200,169,107,.1),transparent 65%);opacity:0;transition:opacity .4s;border-radius:20px}
+.why-card:hover{border-color:rgba(200,169,107,.4);transform:translateY(-8px)}
+.why-card:hover .why-glow{opacity:1}
+.why-icon{width:66px;height:66px;background:rgba(200,169,107,.1);border:1px solid rgba(200,169,107,.2);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.5rem;transition:transform .5s cubic-bezier(.34,1.56,.64,1),background .4s;position:relative;z-index:1}
+.why-card:hover .why-icon{transform:rotate(15deg);background:rgba(200,169,107,.2)}
+.why-icon svg{width:27px;height:27px;stroke:var(--gold);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round}
+.why-card h4{font-family:'Cormorant Garamond',serif;font-size:1.38rem;font-weight:500;color:var(--white);margin-bottom:.5rem;position:relative;z-index:1}
+.why-card p{color:rgba(255,255,255,.4);font-size:.81rem;line-height:1.75;font-weight:300;position:relative;z-index:1}
+
+/* ── TIMELINE ── */
+.timeline-section{background:var(--white);padding:8rem 5%;overflow:hidden}
+.timeline-head{text-align:center;max-width:600px;margin:0 auto 6rem}
+.tl-track{position:relative;max-width:1180px;margin:0 auto}
+.tl-connector{position:absolute;top:33px;left:9%;right:9%;height:2px;background:rgba(200,169,107,.16);border-radius:2px;overflow:hidden}
+.tl-fill{height:100%;width:0%;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:2px;transition:width .18s linear}
+.tl-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:2rem;position:relative;z-index:1;padding:0 1.5rem}
+.tl-step{text-align:center}
+.tl-circle{
+  width:66px;height:66px;border-radius:50%;
+  background:var(--white);border:2px solid rgba(200,169,107,.26);
+  display:flex;align-items:center;justify-content:center;
+  margin:0 auto 1.5rem;transition:all .5s cubic-bezier(.34,1.56,.64,1);
+  position:relative;
+}
+.tl-circle::after{content:'';position:absolute;inset:-7px;border-radius:50%;border:1px solid transparent;transition:border-color .5s,box-shadow .5s}
+.tl-step.active .tl-circle{background:var(--gold);border-color:var(--gold);box-shadow:0 0 30px rgba(200,169,107,.5)}
+.tl-step.active .tl-circle::after{border-color:rgba(200,169,107,.32);box-shadow:0 0 20px rgba(200,169,107,.12)}
+.tl-circle svg{width:23px;height:23px;stroke:var(--gold);fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;transition:stroke .3s}
+.tl-step.active .tl-circle svg{stroke:var(--dark)}
+.tl-num{font-size:.64rem;color:var(--gold);letter-spacing:.16em;text-transform:uppercase;font-weight:600;margin-bottom:.2rem}
+.tl-step h4{font-family:'Cormorant Garamond',serif;font-size:1.22rem;font-weight:500;color:var(--dark);margin-bottom:.4rem}
+.tl-step p{color:var(--gray);font-size:.8rem;line-height:1.65;font-weight:300}
+
+/* ── TESTIMONIALS ── */
+.tst-section{background:var(--beige);padding:8rem 0;overflow:hidden}
+.tst-head{text-align:center;max-width:600px;margin:0 auto 4.5rem;padding:0 5%}
+.marquee-wrap{overflow:hidden;-webkit-mask:linear-gradient(90deg,transparent,black 8%,black 92%,transparent)}
+.marquee-track{display:flex;gap:1.5rem;animation:marqueeRun 36s linear infinite;width:max-content}
+.marquee-track:hover{animation-play-state:paused}
+@keyframes marqueeRun{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tst-card{
+  min-width:360px;
+  background:rgba(255,255,255,.82);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);
+  border-radius:22px;padding:2rem 2.4rem;
+  border:1px solid rgba(200,169,107,.12);
+  box-shadow:0 8px 32px rgba(13,59,46,.06);
+  transition:transform .4s,box-shadow .4s;
+}
+.tst-card:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(13,59,46,.1)}
+.tst-stars{display:flex;gap:3px;margin-bottom:1rem}
+.tst-stars svg{width:14px;height:14px;fill:var(--gold)}
+.quote-icon{font-family:'Cormorant Garamond',serif;font-size:3rem;color:var(--gold);opacity:.3;line-height:.6;margin-bottom:.5rem;display:block;font-weight:700}
+.tst-text{font-family:'Cormorant Garamond',serif;font-size:.96rem;font-style:italic;color:var(--dark);line-height:1.82;margin-bottom:1.5rem}
+.tst-author{display:flex;align-items:center;gap:.75rem}
+.tst-avatar{width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--dark),var(--green));display:flex;align-items:center;justify-content:center;font-family:'Cormorant Garamond',serif;font-size:1rem;color:var(--gold);font-weight:600;flex-shrink:0;overflow:hidden}
+.tst-avatar img{width:100%;height:100%;object-fit:cover;border-radius:50%}
+.tst-name{font-size:.88rem;font-weight:600;color:var(--dark)}
+.tst-role{font-size:.74rem;color:var(--gray);font-weight:300}
+
+/* ── CTA ── */
+.cta-section{
+  background:var(--dark);padding:10rem 5%;
+  text-align:center;position:relative;overflow:hidden;
+}
+.cta-section::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 100% 100% at 50% 50%,rgba(20,92,67,.65),var(--dark) 70%)}
+/* Animated beam */
+.cta-beam{
+  position:absolute;top:0;left:50%;transform:translateX(-50%);
+  width:2px;height:100%;
+  background:linear-gradient(180deg,transparent,rgba(200,169,107,.15),transparent);
+  animation:beamPulse 3s ease-in-out infinite;
+}
+@keyframes beamPulse{0%,100%{opacity:0.3;transform:translateX(-50%) scaleX(1)}50%{opacity:1;transform:translateX(-50%) scaleX(2)}}
+.cta-parts{position:absolute;inset:0;overflow:hidden;pointer-events:none}
+.cp{position:absolute;background:var(--gold);border-radius:50%;opacity:0;animation:cpUp ease infinite}
+@keyframes cpUp{0%{opacity:0;transform:translateY(0) scale(0)}30%{opacity:.5}100%{opacity:0;transform:translateY(-200px) scale(2.5)}}
+.cta-body{position:relative;z-index:1;max-width:800px;margin:0 auto}
+.cta-body .section-tag{color:var(--gold);justify-content:center}
+.cta-body .section-tag::before{background:var(--gold)}
+.cta-section .section-heading{color:var(--white);font-size:clamp(2.8rem,6.5vw,5.2rem);margin-top:.6rem}
+.cta-section .section-heading em{color:var(--gold)}
+.cta-sub{color:rgba(255,255,255,.45);font-size:1rem;font-weight:300;max-width:480px;margin:1.5rem auto 3rem;line-height:1.88}
+.btn-gold-lg{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:var(--gold);color:var(--dark);
+  padding:1.1rem 3rem;border-radius:50px;
+  font-size:1rem;font-weight:600;text-decoration:none;letter-spacing:.04em;
+  transition:all .4s cubic-bezier(.34,1.56,.64,1);
+  position:relative;overflow:hidden;cursor:none;
+  animation:ctaBreathe 3s ease-in-out infinite;
+}
+@keyframes ctaBreathe{0%,100%{box-shadow:0 0 20px rgba(200,169,107,.3)}50%{box-shadow:0 0 40px rgba(200,169,107,.6)}}
+.btn-gold-lg:hover{background:var(--gold2);transform:translateY(-4px);box-shadow:0 24px 60px rgba(200,169,107,.5) !important;animation:none}
+/* Shine sweep */
+.btn-gold-lg::after{
+  content:'';position:absolute;top:-50%;left:-120%;
+  width:60%;height:200%;
+  background:linear-gradient(120deg,transparent,rgba(255,255,255,.35),transparent);
+  transition:left .6s;
+}
+.btn-gold-lg:hover::after{left:150%}
+
+/* ── FOOTER ── */
+footer{background:#061810;padding:5rem 5% 2.5rem;color:rgba(255,255,255,.38)}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:4rem;margin-bottom:4rem}
+.footer-logo-img{height:68px;width:auto;display:block;border-radius:12px;margin-bottom:1.2rem;box-shadow:0 4px 20px rgba(0,0,0,.3)}
+.footer-brand p{font-size:.8rem;line-height:1.88;max-width:240px}
+.footer-addr{margin-top:1rem;font-size:.76rem;line-height:1.9}
+.footer-col h5{font-size:.66rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gold);margin-bottom:1.2rem;font-weight:600}
+.footer-col a{display:block;font-size:.8rem;color:rgba(255,255,255,.36);text-decoration:none;margin-bottom:.5rem;transition:color .25s,transform .25s}
+.footer-col a:hover{color:var(--gold);transform:translateX(4px)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.055);padding-top:1.8rem;display:flex;justify-content:space-between;align-items:center;font-size:.74rem}
+.footer-bottom a{color:rgba(255,255,255,.28);text-decoration:none;transition:color .25s}
+.footer-bottom a:hover{color:var(--gold)}
+
+/* ── SECTION DIVIDERS ── */
+.divider{height:2px;background:linear-gradient(90deg,transparent,rgba(200,169,107,.2),transparent);margin:0}
+
+/* ── MOBILE STICKY CTA ── */
+.mobile-cta{display:none;position:fixed;bottom:0;left:0;right:0;background:rgba(13,59,46,.97);backdrop-filter:blur(12px);border-top:1px solid rgba(200,169,107,.18);padding:.9rem 1.5rem;z-index:800;justify-content:center}
+.mobile-cta a{background:var(--gold);color:var(--dark);padding:.82rem 2rem;border-radius:50px;font-size:.86rem;font-weight:600;text-decoration:none;display:block;text-align:center}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1024px){
+  .why-grid{grid-template-columns:repeat(2,1fr)}
+  .svc-grid{grid-template-columns:repeat(2,1fr)}
+  .scroll-wrapper{grid-template-columns:1fr}
+  .scroll-sticky{position:static;height:auto;padding:4rem 5%}
+  .scroll-items{padding:3rem 5%}
+  .footer-top{grid-template-columns:1fr 1fr;gap:3rem}
+}
+@media(max-width:768px){
+  .nav-links,.nav-cta{display:none}
+  .mobile-cta{display:flex}
+  .svc-grid,.why-grid{grid-template-columns:1fr}
+  .tl-steps{grid-template-columns:1fr 1fr;gap:3rem}
+  .tl-connector{display:none}
+  .stats-row{grid-template-columns:repeat(2,1fr)}
+  .stat-box::after{display:none}
+  .footer-top{grid-template-columns:1fr;gap:2.5rem}
+  .footer-bottom{flex-direction:column;gap:.8rem;text-align:center}
+  .hero{padding-top:108px;padding-bottom:30px}
+  body{padding-bottom:68px}
+  #cur,.cur-ring,.cur-dot,.cur-trail{display:none !important}
+  .grain{display:none}
+}
+@media(max-width:480px){
+  .tl-steps{grid-template-columns:1fr}
+  .hero h1{font-size:3rem}
+  .tst-card{min-width:300px}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+}
+</style>
+</head>
+<body>
+
+<!-- PRELOADER -->
+<div id="preloader">
+  <div class="pre-logo" id="prelogo">
+    <img src="data:image/webp;base64,UklGRjoHAABXRUJQVlA4WAoAAAAQAAAA2wAA7wAAQUxQSFUAAAABYBNJshU+eyJBCfnLnwxwcSFEr54EHIAEJGzGRMQETGvZTC3LpP29TX0OxfXZekakL4n/8B/+w3/4D//hP/yH//Af/vuTgP+6Ly1UW5raq0aFrRoBAFZQOCC+BgAA0C4AnQEq3ADwAD5JJI5FoqIhEGmdkCgEhLO3cLjY4nyehD7N/rv5Ty4ARftjav6b/y/4I7ajzIecB/pvWBvKu9FZBp5p/s3br/bOWjSM/bb8L+SXJn8Csi39w/I7iXAAfkX9S/3ncV+jelomVeQD6j9gn9a/992EPRVGW1l4VPkwna9KbFfM1OMiLUhY9vi1TfPbXy7EIipaR2JU2yHlSkS8bPbotU99BucIzOWeKZHjqnwZUpI/BQlvlalIl6an+atYp+WEyuLWHf+3Hjia5nktslwQVegypMYkegDcL92AX9Fdf5GM1IEupk2uN4sKEZjH2uf53nkeWIrcaS2HTkjEty3VRec76TjAmrtQPMjjHa6i9HcApNsLXthNV1HGEAAIwUTk7Z9FN8z3TqqkOAzvJUmNniP+7ZcQEtGyuOVFHZJ9mtKDBor3IqJG+W6W6tjBGcJLUpEvT14xLh7fFqnwTSY23xap8GU3dUv6QYzwhO/oPQ02lOEbZy1vDAAA+n/X4780LoQEgPhIHccHkRzXkhSKHimWJFhGnk1zEoi1gU85LdpXtUYJn/j+J8WDkt2le6sV1Xq//y48ERqxKPG/Beov9Ucr1vgAP9AABtxWDlZz6fNTi9xOddCB35CC+F79kbgcm//7bCx/F/27/6Ct8lRUrGlTX9CL95cUQgJ/7THj+10Y0ZGDfAf7VDtx/xq29eannOZ4p+S7VqKELvdVv/PpdKyvH7Hiv/AxiaYewKCB6KHtnL/z/sglKRuAC9g/aoFAwIa/03gbqr4gAwtOKOGJoN2/6FPlciGMjvyF+d4rHyNCOmNt/DS41oAdNJYdOm4Dfoqe4lPr2f+Kem+RDh/Gpq/0B3l8kILlQDjV+obuvc/kzXStfT9cLbE/xf7yUDqg5+eWWsMe5FJGj5kQWPF5Iqg/FTthn+f/cmT79A1QiI2HWBR0geJqDDZgi7K8iJ2zLbdx352ggAMSJxOXtjtv0XhlcJketLk166A+moLf8gfs9t77nBbV0KetAwwQgPdK1CSYldvVDtO3y1SckxqOU4YeVHiIsLKHJAVxAAuMOjmdmCv4i0DVsc/+qqgonRkqi7/ypEfoqo+fbJZNIK9cHA3eqZVuFoQVMF94pf95k1gKEsD/F8St45weGan143ggv7tKew8W7wCEw9KS4IhZzhi+emwZoODiBsUE9jH34f4Wb1M4EPZ1+1Ir8Qfr+bcTMmMsvduWAU5DBRzgeIOJ4Gyt6VC6tKmUNu5idrkcm0RJxLIXMGnk/FinASzIgi8CAXN/4/v7Fj7edCw1HBGulZvbnBz5bQVfbEAH1tCGnAGy5NC8y8yPfbVKcTVKByy20s2QC3oIoAzCAj1X7kld13XEJretoyiVsuI2LUgwaHNcWJH7nRzoUFST76FEhRNW3qdVg9E6QJh8ZTFchpR/dt9BKQAsClEy2Y+cn8N0yt2+HMpj5yWXvEkwpAzOaYplQ44h+4kAUZGGw8qM3nGyFQOPKu/RKfAa7wX2ZdHWpnz5UqSZ4+fB17BUduAp3MaF1RoblptbWpSh5eVZ8OKc4Td8FglGEd+En4Zci4alOwoSKB5gOUp3aG9OyEP5NCgyI9bMXXXkWG4cNzYMKpPfDDxkqbNFeWLAsXPjIzON7auERCHxMnTt6wrarCXRNf7PpM9qVWsBzSr27zYCUXogUFjIgmzvpUtfHV1qaAr4HY/H/sn/KuKqmd16K/MsdQe+cCHdckGaBpuKbKjqljcaV/i+mwPh6Re41IYgDLDhTDeRQfw98pYxbQlpKnXU5COMCapubIkNoBfhez49MHLNVhVcQREXkpVwkkEf9lLqZFaU9EW6j8s3QIKt4ITFTtS82Pe3lTn7Vf+UUur+PqhdVifSADyWY3L98IyR4BaoNXqBK3UMWXMmV/QN4gMGrLTiBfN4EOm6efSopgveTizta6cELbcLkqPrMADgvVjR1eCP//2TQVCgAQJYFpkbSBXADQjMFiTPwo00ar8kfdG7NjIvhHkf1HoC9aMNw8AiDrnM46mbGMH2nGIhhC/mluzXHk9qqzn4hM7m4d2dAO2PQs66SRCFb1LkUnp1DH0UJAY/p6VcxYDMj0G4S+M9dVmGDWbbg2hNAEWweN9yNyEugCy/LT57qPul9ZoC6S6WgMQWxvDBwIu/cxyuGT++Zg05YCZHHAUk39ID/4VRGoWLZZ+f1XK5sO4BqccFXZR1LVCOON8RjVCcqRWEfGfeinYbWsOA/n1eQRJD2E0VLJPpSghk8vglmrxDW8MHYeqGIHjQWLfvm4rAAA==" alt="The Chemist Pharm">
+  </div>
+  <div class="pre-bar-wrap"><div class="pre-bar" id="preBar"></div></div>
+  <div class="pre-pct" id="prePct">0</div>
+  <div class="pre-label">Loading Premium Experience</div>
+</div>
+
+<!-- GRAIN -->
+<div class="grain"></div>
+
+<!-- CURSOR -->
+<div class="cur" id="curDot"><div class="cur-dot"></div></div>
+<div class="cur-ring" id="curRing"></div>
+<div class="cur-trail" id="curTrail"></div>
+
+<!-- SMOOTH SCROLL WRAPPER -->
+<!-- ANN BAR -->
+<div class="ann-bar">
+  <div class="ann-inner">
+    <span>💬 Free Consultation Available</span>
+    <span>🚚 Complimentary Next-Day Delivery on All Orders</span>
+    <span>📞 Call Us: (281) 969-7346</span>
+    <span>✨ Sugar Land TX · 4821 LJ Parkway · Mon–Fri 9am–5pm</span>
+    <span>💬 Free Consultation Available</span>
+    <span>🚚 Complimentary Next-Day Delivery on All Orders</span>
+    <span>📞 Call Us: (281) 969-7346</span>
+    <span>✨ Sugar Land TX · 4821 LJ Parkway · Mon–Fri 9am–5pm</span>
+  </div>
+</div>
+
+<div id="smooth-wrapper">
+<div id="smooth-content">
+
+<!-- NAV -->
+<nav class="nav" id="mainNav">
+  <a href="#home" class="nav-logo">
+    <img src="data:image/webp;base64,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" alt="The Chemist Pharm">
+    <div>
+      <span class="nav-logo-name">The Chemist <span>Pharm</span></span>
+      <span class="nav-logo-sub">Premium Healthcare</span>
+    </div>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#services" data-section="services">Services</a></li>
+    <li><a href="#expertise" data-section="expertise">Expertise</a></li>
+    <li><a href="#process" data-section="process">Process</a></li>
+    <li><a href="#reviews" data-section="reviews">Reviews</a></li>
+    <li><a href="https://thechemistpharm.com/about/" target="_blank">About</a></li>
+  </ul>
+  <a href="https://thechemistpharm.com/request-a-consultation-copy/" class="nav-cta nav-links a" target="_blank"><span>Book Now</span></a>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg-layer">
+    <div class="hero-gradient"></div>
+    <div class="hero-mesh"></div>
+    <div class="hero-grid-overlay"></div>
+  </div>
+  <div class="gb gb1"></div><div class="gb gb2"></div>
+  <div class="gb gb3"></div><div class="gb gb4"></div>
+  <div class="light-streak ls1"></div>
+  <div class="light-streak ls2"></div>
+  <div class="hero-mouse-glow" id="mouseGlow"></div>
+  <!-- Floating icons -->
+  <svg class="fi" style="top:16%;left:7%;animation-duration:13s" viewBox="0 0 24 24" width="38" height="38" fill="none" stroke="#C8A96B" stroke-width="1"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+  <svg class="fi" style="top:72%;right:8%;animation-duration:10s;animation-delay:-3s" viewBox="0 0 24 24" width="32" height="32" fill="none" stroke="#C8A96B" stroke-width="1"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+  <svg class="fi" style="top:28%;right:5%;animation-duration:15s;animation-delay:-6s" viewBox="0 0 24 24" width="30" height="30" fill="none" stroke="#C8A96B" stroke-width="1"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+  <svg class="fi" style="bottom:18%;left:14%;animation-duration:11s;animation-delay:-2s" viewBox="0 0 24 24" width="26" height="26" fill="none" stroke="#C8A96B" stroke-width="1"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+  <div class="hero-content" id="heroContent">
+    <div class="hero-eyebrow" id="heroEyebrow">
+      <div class="hero-eyebrow-dot"></div>
+      Premium Compounding Pharmacy · Sugar Land, TX
+    </div>
+    <h1 id="heroH1">Your Health,<br>Our <em>Devotion</em></h1>
+    <div class="hero-gold-line" id="heroLine"></div>
+    <p class="hero-sub" id="heroSub">Expert pharmacists crafting custom compounded medications tailored precisely to your unique health needs — delivered with luxury care.</p>
+    <div class="hero-actions" id="heroActions">
+      <a href="https://thechemistpharm.com/request-a-consultation-copy/" class="btn-gold" target="_blank" id="btnBook"><span>Book Consultation</span><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg></a>
+      <a href="#services" class="btn-ghost" id="btnExplore"><span>Explore Services</span></a>
+    </div>
+  </div>
+
+</section>
+
+<!-- STATS -->
+<div class="stats-row">
+  <div class="stat-box"><span class="stat-num" data-target="15000">0</span><div class="stat-label">Patients Served</div></div>
+  <div class="stat-box"><span class="stat-num" data-target="98">0</span><div class="stat-label">Satisfaction Rate %</div></div>
+  <div class="stat-box"><span class="stat-num" data-target="20">0</span><div class="stat-label">Years of Excellence</div></div>
+  <div class="stat-box"><span class="stat-num" data-target="50">0</span><div class="stat-label">Licensed Specialists</div></div>
+</div>
+
+<!-- SERVICES -->
+<div class="divider"></div>
+<section class="services-section" id="services">
+  <div class="services-head">
+    <div class="section-tag gsap-reveal">Our Compounding Services</div>
+    <h2 class="section-heading gsap-reveal">Personalized <em>Care</em><br>Beyond the Standard</h2>
+    <p class="section-body gsap-reveal">We specialize in customized medication solutions for patients with unique healthcare needs that cannot be met with commercially available options.</p>
+  </div>
+  <div class="svc-grid">
+    <div class="svc-card gsap-card"><div class="svc-card-bg"></div><div class="svc-card-border"></div>
+      <div class="svc-icon-wrap"><svg viewBox="0 0 24 24"><path d="M3 6l9-4 9 4v6c0 5.55-3.84 10.74-9 12C6.84 22.74 3 17.55 3 12V6z"/></svg></div>
+      <h3>Weight Loss</h3><p>Clinically guided GLP-1 and metabolic solutions to support sustainable weight management and boost energy levels.</p>
+      <a href="https://thechemistpharm.com/services/weight-loss/" class="svc-link" target="_blank">Learn More <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg></a>
+    </div>
+    <div class="svc-card gsap-card"><div class="svc-card-bg"></div><div class="svc-card-border"></div>
+      <div class="svc-icon-wrap"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="5"/><path d="M2 20s2-4 10-4 10 4 10 4"/></svg></div>
+      <h3>Dermatology & Aesthetics</h3><p>Custom skincare formulated with clinical precision — targeting acne, aging, uneven tone, and more tailored to your skin's unique profile.</p>
+      <a href="https://thechemistpharm.com/services/dermatology/" class="svc-link" target="_blank">Learn More <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg></a>
+    </div>
+    <div class="svc-card gsap-card"><div class="svc-card-bg"></div><div class="svc-card-border"></div>
+      <div class="svc-icon-wrap"><svg viewBox="0 0 24 24"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></div>
+      <h3>Hormone Therapy</h3><p>Personalized bioidentical therapies designed to align with your body's chemistry — supporting energy, mood, and metabolic well-being.</p>
+      <a href="https://thechemistpharm.com/services/hormone-therapy/" class="svc-link" target="_blank">Learn More <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg></a>
+    </div>
+    <div class="svc-card gsap-card"><div class="svc-card-bg"></div><div class="svc-card-border"></div>
+      <div class="svc-icon-wrap"><svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>
+      <h3>Peptide Therapy</h3><p>Advanced peptide treatments promoting fat loss, accelerating recovery, and enhancing overall performance — personalized and clinically backed.</p>
+      <a href="https://thechemistpharm.com/services/peptide-therapy/" class="svc-link" target="_blank">Learn More <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg></a>
+    </div>
+    <div class="svc-card gsap-card"><div class="svc-card-bg"></div><div class="svc-card-border"></div>
+      <div class="svc-icon-wrap"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <h3>Hair Loss Treatments</h3><p>Targeted compounds to prevent hair loss, stimulate regrowth, and nourish the scalp — promoting fuller, more resilient hair over time.</p>
+      <a href="https://thechemistpharm.com/services/hair-loss/" class="svc-link" target="_blank">Learn More <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg></a>
+    </div>
+    <div class="svc-card gsap-card"><div class="svc-card-bg"></div><div class="svc-card-border"></div>
+      <div class="svc-icon-wrap"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></div>
+      <h3>Sexual Wellness</h3><p>Effective, discreet solutions to support libido, improve performance, and promote overall sexual health tailored precisely to you.</p>
+      <a href="https://thechemistpharm.com/services/sexual-wellness/" class="svc-link" target="_blank">Learn More <svg viewBox="0 0 24 24"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12,5 19,12 12,19"/></svg></a>
+    </div>
+  </div>
+</section>
+
+<!-- SCROLL INTERACTIVE -->
+<div class="divider"></div>
+<section class="scroll-section" id="expertise">
+  <div class="scroll-wrapper">
+    <div class="scroll-sticky">
+      <div class="section-tag">Our Expertise</div>
+      <h2 class="section-heading">Specialised<br><em>Care Areas</em></h2>
+      <p class="section-body">From compounding to chronic care, our pharmacists bring decades of expertise and genuine dedication to every patient.</p>
+      <div class="progress-wrap">
+        <div class="progress-bar-bg"><div class="progress-bar-fill" id="progFill"></div></div>
+        <div style="position:relative">
+          <div class="progress-beam" id="progBeam"></div>
+          <div class="step-indicators" id="stepInds"></div>
+        </div>
+      </div>
+      <a href="https://thechemistpharm.com/request-a-consultation-copy/" class="btn-gold" target="_blank"><span>Start Your Journey</span></a>
+    </div>
+    <div class="scroll-items" id="scrollItems">
+      <div class="scroll-item active"><span class="scroll-item-num">01 — Compounding</span><h3>Custom Compounded Medications</h3><p>When commercial medications don't fit — wrong dosage, unwanted fillers, unavailable formulation — our pharmacists compound precise solutions tailored exactly to your prescription, fresh in our FDA-registered lab.</p></div>
+      <div class="scroll-item"><span class="scroll-item-num">02 — Hormones</span><h3>Bioidentical Hormone Therapy</h3><p>Expertly crafted bioidentical hormones matched to your body's natural chemistry — addressing menopause, andropause, thyroid, and adrenal health with clinical precision and compassionate ongoing care.</p></div>
+      <div class="scroll-item"><span class="scroll-item-num">03 — Metabolic</span><h3>Weight & Metabolic Wellness</h3><p>Clinical weight loss programmes incorporating GLP-1 medications, peptide protocols, and metabolic support — each protocol uniquely designed and guided by licensed pharmacists at every step.</p></div>
+      <div class="scroll-item"><span class="scroll-item-num">04 — Aesthetics</span><h3>Dermatology & Skin Health</h3><p>Custom topical formulations for acne, anti-ageing, hyperpigmentation, and scalp health — compounded fresh with pharmaceutical-grade ingredients and formulated specifically for your skin's profile.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- WHY -->
+<div class="divider"></div>
+<section class="why-section" id="why">
+  <div class="why-header">
+    <div class="section-tag gsap-reveal">Why Choose Us</div>
+    <h2 class="section-heading gsap-reveal">Built on <em>Trust</em><br>& Clinical Excellence</h2>
+    <p class="section-body gsap-reveal">Four pillars that define who we are and why thousands of patients across Texas trust us with their health.</p>
+  </div>
+  <div class="why-grid">
+    <div class="why-card gsap-card-dark"><div class="why-glow"></div>
+      <div class="why-icon"><svg viewBox="0 0 24 24"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg></div>
+      <h4>Trusted Pharmacy</h4><p>Licensed and PCAB-compliant with 20 years of patient safety and regulatory excellence.</p>
+    </div>
+    <div class="why-card gsap-card-dark"><div class="why-glow"></div>
+      <div class="why-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+      <h4>Licensed Experts</h4><p>Advanced clinical degrees with ongoing specialist certification in compounding and hormone therapy.</p>
+    </div>
+    <div class="why-card gsap-card-dark"><div class="why-glow"></div>
+      <div class="why-icon"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16,8 20,8 23,11 23,16 16,16 16,8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div>
+      <h4>Fast Delivery</h4><p>Complimentary next-day delivery on all orders — securely packaged and temperature-controlled.</p>
+    </div>
+    <div class="why-card gsap-card-dark"><div class="why-glow"></div>
+      <div class="why-icon"><svg viewBox="0 0 24 24"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></div>
+      <h4>Secure Consultations</h4><p>HIPAA-compliant records, encrypted communications, and absolute patient privacy in every interaction.</p>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<div class="divider"></div>
+<section class="timeline-section" id="process">
+  <div class="timeline-head">
+    <div class="section-tag gsap-reveal">How It Works</div>
+    <h2 class="section-heading gsap-reveal">Our <em>Simple</em><br>4-Step Process</h2>
+  </div>
+  <div class="tl-track">
+    <div class="tl-connector"><div class="tl-fill" id="tlFill"></div></div>
+    <div class="tl-steps">
+      <div class="tl-step" id="tls1"><div class="tl-circle"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></div><div class="tl-num">Step 01</div><h4>Consultation</h4><p>Book a free session with a licensed pharmacist to discuss your health goals.</p></div>
+      <div class="tl-step" id="tls2"><div class="tl-circle"><svg viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/></svg></div><div class="tl-num">Step 02</div><h4>Prescription Review</h4><p>Our clinical team verifies your prescription for accuracy, safety, and interactions.</p></div>
+      <div class="tl-step" id="tls3"><div class="tl-circle"><svg viewBox="0 0 24 24"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/></svg></div><div class="tl-num">Step 03</div><h4>Medication Approval</h4><p>Custom medication compounded fresh in our FDA-registered lab.</p></div>
+      <div class="tl-step" id="tls4"><div class="tl-circle"><svg viewBox="0 0 24 24"><rect x="1" y="3" width="15" height="13"/><polygon points="16,8 20,8 23,11 23,16 16,16 16,8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg></div><div class="tl-num">Step 04</div><h4>Fast Delivery</h4><p>Medications dispatched with complimentary next-day delivery to your door.</p></div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<div class="divider"></div>
+<section class="tst-section" id="reviews">
+  <div class="tst-head">
+    <div class="section-tag gsap-reveal">Patient Feedback</div>
+    <h2 class="section-heading gsap-reveal">Our Customers <em>Trust</em> Us</h2>
+  </div>
+  <div class="marquee-wrap"><div class="marquee-track" id="marqueeTrack"></div></div>
+</section>
+
+<!-- CTA -->
+<div class="divider"></div>
+<section class="cta-section" id="cta">
+  <div class="cta-beam"></div>
+  <div class="cta-parts" id="ctaParticles"></div>
+  <div class="cta-body">
+    <div class="section-tag gsap-reveal">Begin Today</div>
+    <h2 class="section-heading gsap-reveal">Your Journey to<br><em>Better Health</em> Starts Now</h2>
+    <p class="cta-sub gsap-reveal">Join thousands of patients who trust The Chemist Pharm for premium, personalized pharmaceutical care.</p>
+    <a href="https://thechemistpharm.com/request-a-consultation-copy/" class="btn-gold-lg gsap-reveal" target="_blank">Book Your Free Consultation</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <img src="data:image/webp;base64,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" alt="The Chemist Pharm" class="footer-logo-img">
+      <p>Your trusted community pharmacy dedicated to personalized compounding care and wellness support.</p>
+      <p class="footer-addr">4821 LJ Parkway, Sugar Land, TX 77479<br>tcp@thechemistpharm.com<br>(281) 969-7346<br>Mon–Fri: 9am–5pm</p>
+    </div>
+    <div class="footer-col">
+      <h5>Services</h5>
+      <a href="https://thechemistpharm.com/services/weight-loss/" target="_blank">Weight Loss</a>
+      <a href="https://thechemistpharm.com/services/dermatology/" target="_blank">Dermatology</a>
+      <a href="https://thechemistpharm.com/services/hormone-therapy/" target="_blank">Hormone Therapy</a>
+      <a href="https://thechemistpharm.com/services/peptide-therapy/" target="_blank">Peptide Therapy</a>
+      <a href="https://thechemistpharm.com/services/hair-loss/" target="_blank">Hair Loss</a>
+      <a href="https://thechemistpharm.com/services/sexual-wellness/" target="_blank">Sexual Wellness</a>
+    </div>
+    <div class="footer-col">
+      <h5>Information</h5>
+      <a href="https://thechemistpharm.com/forms-information/" target="_blank">New Patient Form</a>
+      <a href="https://thechemistpharm.com/forms-information/" target="_blank">Refill Rx Form</a>
+      <a href="https://thechemistpharm.com/forms-information/" target="_blank">Transfer Rx Form</a>
+      <a href="https://thechemistpharm.com/about/" target="_blank">About Us</a>
+      <a href="https://thechemistpharm.com/blog/" target="_blank">Blog</a>
+    </div>
+    <div class="footer-col">
+      <h5>Quick Links</h5>
+      <a href="https://thechemistpharm.com/contact-us/" target="_blank">Contact Us</a>
+      <a href="https://host4.lifefile.net/thechemistpharm/doctor/" target="_blank">Patient Login</a>
+      <a href="https://thechemistpharm.com/privacy-policy/" target="_blank">Privacy Policy</a>
+      <a href="https://thechemistpharm.com/request-a-consultation-copy/" target="_blank">Book Consultation</a>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 The Chemist Pharm. All rights reserved.</p>
+    <p><a href="https://thechemistpharm.com/privacy-policy/" target="_blank">Privacy Policy</a> &nbsp;·&nbsp; <a href="#">Terms of Use</a></p>
+  </div>
+</footer>
+
+</div><!-- /smooth-content -->
+</div><!-- /smooth-wrapper -->
+
+<!-- MOBILE CTA -->
+<div class="mobile-cta">
+  <a href="https://thechemistpharm.com/request-a-consultation-copy/" target="_blank">Book Free Consultation</a>
+</div>
+
+<script>
+// ── PRELOADER ──
+(function(){
+  const logo = document.getElementById('prelogo');
+  const bar  = document.getElementById('preBar');
+  const pct  = document.getElementById('prePct');
+  const pre  = document.getElementById('preloader');
+  let p = 0;
+  setTimeout(() => logo.classList.add('show'), 200);
+  const iv = setInterval(() => {
+    p += Math.random() * 14 + 4;
+    if (p >= 100) { p = 100; clearInterval(iv); }
+    bar.style.width = p + '%';
+    pct.textContent = Math.round(p);
+    if (p >= 100) {
+      setTimeout(() => {
+        pre.classList.add('hide');
+        document.body.style.overflow = '';
+        initPage();
+      }, 500);
+    }
+  }, 80);
+})();
+document.body.style.overflow = 'hidden';
+
+// ── SMOOTH SCROLL (Lenis-style via rAF) ──
+let scrollY = 0, targetScrollY = 0, ease = 0.085;
+const smoothContent = document.getElementById('smooth-content');
+const smoothWrapper  = document.getElementById('smooth-wrapper');
+
+function setupSmoothScroll() {
+  smoothWrapper.style.position = 'fixed';
+  smoothWrapper.style.top = '0';
+  smoothWrapper.style.left = '0';
+  smoothWrapper.style.width = '100%';
+  smoothWrapper.style.height = '100%';
+  smoothWrapper.style.overflowY = 'scroll';
+  smoothWrapper.style.overflowX = 'hidden';
+  document.body.style.height = smoothContent.scrollHeight + 'px';
+  document.body.style.marginTop = '34px';
+  smoothWrapper.addEventListener('scroll', () => {
+    targetScrollY = smoothWrapper.scrollTop;
+  });
+}
+
+function smoothScrollLoop() {
+  scrollY += (targetScrollY - scrollY) * ease;
+  if (Math.abs(targetScrollY - scrollY) < 0.1) scrollY = targetScrollY;
+  // Sync ScrollTrigger
+  if (window.ScrollTrigger) ScrollTrigger.update();
+  rafHandle = requestAnimationFrame(smoothScrollLoop);
+}
+let rafHandle;
+
+// ── CURSOR ──
+const curDot   = document.getElementById('curDot');
+const curRing  = document.getElementById('curRing');
+const curTrail = document.getElementById('curTrail');
+let mx=0, my=0, rx=0, ry=0, tx=0, ty=0;
+
+document.addEventListener('mousemove', e => {
+  mx = e.clientX; my = e.clientY;
+  curDot.style.left   = mx + 'px';
+  curDot.style.top    = my + 'px';
+  // mouse glow in hero
+  const mg = document.getElementById('mouseGlow');
+  if (mg) {
+    const hero = document.querySelector('.hero');
+    if (hero) {
+      const r = hero.getBoundingClientRect();
+      mg.style.left = (mx - r.left) + 'px';
+      mg.style.top  = (my - r.top)  + 'px';
+    }
+  }
+});
+
+(function ringLoop() {
+  rx += (mx - rx) * .12; ry += (my - ry) * .12;
+  tx += (mx - tx) * .06; ty += (my - ty) * .06;
+  curRing.style.left   = rx + 'px'; curRing.style.top   = ry + 'px';
+  curTrail.style.left  = tx + 'px'; curTrail.style.top  = ty + 'px';
+  requestAnimationFrame(ringLoop);
+})();
+
+// Cursor states
+document.querySelectorAll('a, button').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    curRing.style.width  = '60px'; curRing.style.height = '60px';
+    curRing.style.borderColor = 'var(--dark)';
+    curDot.querySelector('.cur-dot').style.width  = '5px';
+    curDot.querySelector('.cur-dot').style.height = '5px';
+  });
+  el.addEventListener('mouseleave', () => {
+    curRing.style.width  = '44px'; curRing.style.height = '44px';
+    curRing.style.borderColor = 'rgba(200,169,107,.5)';
+    curDot.querySelector('.cur-dot').style.width  = '8px';
+    curDot.querySelector('.cur-dot').style.height = '8px';
+  });
+});
+document.querySelectorAll('.svc-card,.why-card').forEach(el => {
+  el.addEventListener('mouseenter', () => {
+    curRing.style.width='70px';curRing.style.height='70px';
+    curRing.style.borderColor='rgba(200,169,107,.6)';
+    curRing.style.background='rgba(200,169,107,.04)';
+  });
+  el.addEventListener('mouseleave', () => {
+    curRing.style.width='44px';curRing.style.height='44px';
+    curRing.style.background='transparent';
+    curRing.style.borderColor='rgba(200,169,107,.5)';
+  });
+});
+
+// ── 3D CARD TILT ──
+document.querySelectorAll('.svc-card').forEach(card => {
+  card.addEventListener('mousemove', e => {
+    const r  = card.getBoundingClientRect();
+    const cx = r.left + r.width/2, cy = r.top + r.height/2;
+    const dx = (e.clientX - cx)/r.width * 2;
+    const dy = (e.clientY - cy)/r.height * 2;
+    card.style.transform = `perspective(900px) rotateY(${dx * 8}deg) rotateX(${-dy * 6}deg) translateY(-10px)`;
+    card.style.boxShadow = `${dx*12}px ${dy*8}px 50px rgba(13,59,46,.15)`;
+    // spotlight
+    const mx2 = ((e.clientX - r.left)/r.width)*100;
+    const my2 = ((e.clientY - r.top)/r.height)*100;
+    card.style.setProperty('--mx', mx2+'%');
+    card.style.setProperty('--my', my2+'%');
+  });
+  card.addEventListener('mouseleave', () => {
+    card.style.transform = 'perspective(900px) rotateX(0) rotateY(0) translateY(0)';
+    card.style.boxShadow = '';
+  });
+});
+
+// ── MAGNETIC BUTTONS ──
+document.querySelectorAll('.btn-gold,.btn-ghost,.btn-gold-lg').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const r  = btn.getBoundingClientRect();
+    const dx = e.clientX - (r.left + r.width/2);
+    const dy = e.clientY - (r.top  + r.height/2);
+    btn.style.transform = `translateY(-3px) translate(${dx*.15}px,${dy*.12}px)`;
+  });
+  btn.addEventListener('mouseleave', () => {
+    btn.style.transform = '';
+  });
+});
+
+// ── NAV SCROLL BEHAVIOUR ──
+const nav = document.getElementById('mainNav');
+let lastScroll = 0;
+function handleNavScroll() {
+  const cur = targetScrollY;
+  nav.classList.toggle('scrolled', cur > 80);
+  if (cur > lastScroll + 8 && cur > 250) nav.classList.add('hidden');
+  else if (cur < lastScroll - 5) nav.classList.remove('hidden');
+  lastScroll = cur;
+  // Active section indicator
+  document.querySelectorAll('section[id]').forEach(sec => {
+    const r = sec.getBoundingClientRect();
+    const link = document.querySelector(`.nav-links a[data-section="${sec.id}"]`);
+    if (link) link.classList.toggle('active', r.top <= 100 && r.bottom > 100);
+  });
+}
+smoothWrapper ? (smoothWrapper.addEventListener('scroll', handleNavScroll)) : window.addEventListener('scroll', handleNavScroll);
+
+// ── GSAP SETUP ──
+function initPage() {
+  gsap.registerPlugin(ScrollTrigger);
+
+  // Use smooth-wrapper as scroller
+  ScrollTrigger.defaults({ scroller: '#smooth-wrapper' });
+
+  // ── HERO ANIMATIONS ──
+  const tl = gsap.timeline({ delay: .1 });
+  tl.to('#heroEyebrow', { opacity:1, y:0, duration:.8, ease:'power3.out' })
+    .to('#heroH1',       { opacity:1, duration:.1 }, '-=.4')
+    .fromTo('#heroH1 .char', { y:'110%', opacity:0 },
+      { y:'0%', opacity:1, duration:.7, stagger:.02, ease:'power4.out' }, '-=.2')
+    .to('.hero-gold-line', { width:'220px', duration:1.2, ease:'power2.out' }, '-=.3')
+    .to('#heroSub',     { opacity:1, y:0, duration:.8, ease:'power3.out' }, '-=.6')
+    .to('#heroActions', { opacity:1, y:0, duration:.8, ease:'power3.out' }, '-=.5')
+
+
+  // Hero word split
+  const h1 = document.getElementById('heroH1');
+  if (h1) {
+    // Wrap chars for animation
+    let html = h1.innerHTML;
+    html = html.replace(/([^<>\s])(?=[^<>]*(?:<|$))/g, '<span class="char">$1</span>');
+  }
+
+  // ── HERO PARALLAX ──
+  ScrollTrigger.create({
+    trigger: '.hero',
+    start: 'top top',
+    end: 'bottom top',
+    onUpdate: self => {
+      const p = self.progress;
+      gsap.set('#heroContent', { y: p * 120, opacity: 1 - p * 1.2 });
+      gsap.set('.gb1',         { y: p * -60 });
+      gsap.set('.gb2',         { y: p * 40 });
+    }
+  });
+
+  // ── GSAP REVEAL: section tags, headings ──
+  gsap.utils.toArray('.gsap-reveal').forEach((el, i) => {
+    gsap.fromTo(el,
+      { opacity:0, y:40, filter:'blur(6px)' },
+      { opacity:1, y:0,  filter:'blur(0px)', duration:1, ease:'power3.out',
+         scrollTrigger:{ trigger:el, start:'top 86%', toggleActions:'play none none none' },
+         delay: i % 3 * .12
+      }
+    );
+  });
+
+  // ── SERVICE CARDS STAGGER ──
+  gsap.fromTo('.gsap-card',
+    { opacity:0, y:60, scale:.94 },
+    { opacity:1, y:0, scale:1, duration:.85, stagger:.1, ease:'power3.out',
+       scrollTrigger:{ trigger:'.svc-grid', start:'top 80%' }
+    }
+  );
+
+  // ── WHY CARDS ──
+  gsap.fromTo('.gsap-card-dark',
+    { opacity:0, y:50, scale:.96 },
+    { opacity:1, y:0, scale:1, duration:.8, stagger:.12, ease:'power3.out',
+       scrollTrigger:{ trigger:'.why-grid', start:'top 80%' }
+    }
+  );
+
+  // ── STATS COUNTER ──
+  ScrollTrigger.create({
+    trigger: '.stats-row',
+    start: 'top 85%',
+    once: true,
+    onEnter: () => {
+      document.querySelectorAll('.stat-num').forEach(el => {
+        const target = +el.dataset.target;
+        gsap.fromTo(el,
+          { textContent: 0 },
+          { textContent: target, duration: 2.2, ease: 'power2.out', snap:{ textContent:1 },
+             onUpdate: function() {
+               const v = Math.round(+el.textContent);
+               el.textContent = target >= 1000 ? v.toLocaleString()+'+' : (target===98 ? v+'%' : v+'');
+             }
+          }
+        );
+      });
+    }
+  });
+
+  // ── TIMELINE ──
+  ScrollTrigger.create({
+    trigger: '.tl-track',
+    start: 'top 75%',
+    end: 'bottom 40%',
+    scrub: 1,
+    onUpdate: self => {
+      const p = self.progress;
+      document.getElementById('tlFill').style.width = (p * 100) + '%';
+      document.querySelectorAll('.tl-step').forEach((s, i) => {
+        s.classList.toggle('active', p > i / 4);
+      });
+    }
+  });
+
+  // ── SECTION FADE IN (blur-to-clear) ──
+  gsap.utils.toArray('.tst-section, .cta-section').forEach(sec => {
+    gsap.fromTo(sec,
+      { opacity: 0 },
+      { opacity: 1, duration: 1.2, ease:'power2.out',
+         scrollTrigger: { trigger: sec, start:'top 90%', toggleActions:'play none none none' }
+      }
+    );
+  });
+
+  // ── CTA SECTION heading split ──
+  const ctaH = document.querySelector('.cta-section .section-heading');
+  if (ctaH) {
+    gsap.fromTo(ctaH,
+      { opacity:0, y:50, filter:'blur(8px)' },
+      { opacity:1, y:0, filter:'blur(0)', duration:1.2, ease:'power3.out',
+         scrollTrigger:{ trigger: ctaH, start:'top 80%' }
+      }
+    );
+  }
+
+  // Smooth scroll anchors
+  document.querySelectorAll('a[href^="#"]').forEach(a => {
+    a.addEventListener('click', e => {
+      const id = a.getAttribute('href').slice(1);
+      const target = document.getElementById(id);
+      if (target && smoothWrapper) {
+        e.preventDefault();
+        const offset = target.offsetTop - 70;
+        smoothWrapper.scrollTo({ top: offset, behavior: 'smooth' });
+      }
+    });
+  });
+
+  setupSmoothScroll();
+  smoothScrollLoop();
+}
+
+// ── SCROLL INTERACTIVE SECTION ──
+const scrollItemEls = document.querySelectorAll('.scroll-item');
+const progFill  = document.getElementById('progFill');
+const progBeam  = document.getElementById('progBeam');
+const stepIndsEl = document.getElementById('stepInds');
+const itemNames  = ['Custom Compounding','Hormone Therapy','Metabolic Wellness','Dermatology'];
+
+itemNames.forEach((name, i) => {
+  const d = document.createElement('div');
+  d.className = 'step-ind' + (i===0 ? ' active' : '');
+  d.innerHTML = `<div class="step-ind-dot"></div>${name}`;
+  stepIndsEl.appendChild(d);
+});
+
+function updateScrollSection() {
+  const el = document.getElementById('scrollItems');
+  if (!el) return;
+  const wrapper = document.getElementById('smooth-wrapper') || window;
+  const scrollTop = wrapper.scrollTop || window.scrollY;
+  const elTop = el.offsetTop;
+  const elH   = el.offsetHeight;
+  const prog  = Math.max(0, Math.min(1, (scrollTop - elTop + window.innerHeight * .5) / (elH - window.innerHeight * .5)));
+  progFill.style.width = (prog * 100) + '%';
+  if (progBeam) progBeam.style.height = (prog * 100) + '%';
+  const ai = Math.min(scrollItemEls.length - 1, Math.floor(prog * scrollItemEls.length));
+  scrollItemEls.forEach((it, i) => it.classList.toggle('active', i === ai));
+  document.querySelectorAll('.step-ind').forEach((d, i) => d.classList.toggle('active', i === ai));
+}
+
+(document.getElementById('smooth-wrapper') || window).addEventListener('scroll', updateScrollSection, {passive:true});
+
+// ── TESTIMONIALS ──
+const reviews = [
+  {text:"It is the most effective pharmacy I have ever used. No long waiting on refills, very courteous staff, and helpful. I would recommend this company to anyone.",name:"Jofra",role:"Med Spa Owner",img:"https://i0.wp.com/thechemistpharm.com/wp-content/uploads/2025/05/Ellipse-323.webp?fit=144%2C144&ssl=1",init:"JO"},
+  {text:"TCP has been my pharmacy for years. The staff are knowledgeable and so friendly. There are pharmacies closer to me but I will always choose TCP.",name:"Archer",role:"Med Spa Owner",img:"https://i0.wp.com/thechemistpharm.com/wp-content/uploads/2025/05/Ellipse-322.webp?fit=144%2C144&ssl=1",init:"AR"},
+  {text:"I have used TCP for all of my prescriptions for many years. They have always been very helpful and prompt in filling my prescriptions.",name:"Smith",role:"Long-time Patient",img:"https://i0.wp.com/thechemistpharm.com/wp-content/uploads/2025/05/Ellipse-321.png?fit=144%2C144&ssl=1",init:"SM"},
+  {text:"They do an exceptional job. My prescriptions are filled on time and delivery is great!",name:"Jennifer R.",role:"Customer",img:"https://i0.wp.com/thechemistpharm.com/wp-content/uploads/2025/05/Ellipse-321-3.png?fit=192%2C192&ssl=1",init:"JR"},
+  {text:"Everything is easy with The Chemist Pharmacy. Staff is always helpful and my prescriptions are ready when I need them. Thank you!",name:"Catherine O.",role:"Customer",img:"https://i0.wp.com/thechemistpharm.com/wp-content/uploads/2025/05/Ellipse-321-2.png?fit=192%2C192&ssl=1",init:"CO"},
+  {text:"Wonderful experience as always. Highly recommend this place. Myosotis at the front desk was very accommodating and a pleasure to work with.",name:"Rob",role:"Customer",img:"https://i0.wp.com/thechemistpharm.com/wp-content/uploads/2025/05/Ellipse-321-1.png?fit=192%2C192&ssl=1",init:"RO"},
+];
+const mqTrack = document.getElementById('marqueeTrack');
+[...reviews, ...reviews].forEach(r => {
+  const c = document.createElement('div'); c.className = 'tst-card';
+  c.innerHTML = `
+    <div class="tst-stars">${'<svg viewBox="0 0 24 24"><polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26"/></svg>'.repeat(5)}</div>
+    <span class="quote-icon">"</span>
+    <p class="tst-text">${r.text}</p>
+    <div class="tst-author">
+      <div class="tst-avatar"><img src="${r.img}" alt="${r.name}" onerror="this.style.display='none'">${r.init}</div>
+      <div><div class="tst-name">${r.name}</div><div class="tst-role">${r.role}</div></div>
+    </div>`;
+  mqTrack.appendChild(c);
+});
+
+// ── CTA PARTICLES ──
+const ctaP = document.getElementById('ctaParticles');
+for (let i = 0; i < 30; i++) {
+  const p = document.createElement('div'); p.className = 'cp';
+  const s = Math.random() * 3 + 1;
+  p.style.cssText = `width:${s}px;height:${s}px;left:${Math.random()*100}%;top:${Math.random()*100}%;animation-duration:${Math.random()*4+3}s;animation-delay:${Math.random()*5}s`;
+  ctaP.appendChild(p);
+}
+
+// ── BUTTON RIPPLE ──
+document.querySelectorAll('.btn-gold,.btn-gold-lg').forEach(btn => {
+  btn.addEventListener('click', e => {
+    const r = document.createElement('span');
+    const rect = btn.getBoundingClientRect();
+    r.style.cssText = `position:absolute;width:4px;height:4px;border-radius:50%;background:rgba(255,255,255,.6);left:${e.clientX-rect.left}px;top:${e.clientY-rect.top}px;transform:scale(0);animation:ripple .65s ease;pointer-events:none`;
+    btn.appendChild(r); setTimeout(() => r.remove(), 660);
+  });
+});
+const rs = document.createElement('style');
+rs.textContent = '@keyframes ripple{to{transform:scale(80);opacity:0}}';
+document.head.appendChild(rs);
+
+// ── HERO CHAR SPLIT (simple) ──
+window.addEventListener('load', () => {
+  const h1 = document.getElementById('heroH1');
+  if (!h1) return;
+  function wrapChars(el) {
+    el.childNodes.forEach(node => {
+      if (node.nodeType === 3) {
+        const frag = document.createDocumentFragment();
+        [...node.textContent].forEach(ch => {
+          const s = document.createElement('span');
+          s.className = 'char';
+          s.textContent = ch === ' ' ? '\u00A0' : ch;
+          frag.appendChild(s);
+        });
+        node.replaceWith(frag);
+      }
+    });
+  }
+  h1.querySelectorAll('em').forEach(em => wrapChars(em));
+  wrapChars(h1);
+});
+</script>
+</body>
+</html>
